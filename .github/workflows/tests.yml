@@ -13,6 +13,32 @@ jobs:
   ci:
     runs-on: ubuntu-latest
 
+    services:
+      # Os testes usam o banco "testing" no Postgres (phpunit.xml), como no Sail.
+      pgsql:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: testing
+          POSTGRES_USER: sail
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U sail -d testing"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    # Variáveis do processo têm precedência sobre o .env copiado do .env.example (feito para o Sail).
+    env:
+      DB_HOST: 127.0.0.1
+      DB_DATABASE: testing
+      DB_USERNAME: sail
+      DB_PASSWORD: password
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -22,9 +48,10 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
-          php-version: '8.4'
+          php-version: '8.5'
+          extensions: pdo_pgsql, pgsql
           tools: composer:v2
-          coverage: none
+          coverage: pcov
 
       - name: Setup Node
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0

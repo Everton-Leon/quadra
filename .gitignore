@@ -38,3 +38,5 @@ yarn-error.log
 /opencode.json
 /opencode.jsonc
 /.claude/settings.local.json
+/.claude/skills/impeccable/scripts/bin/
+/.claude/skills/impeccable/scripts/data/font-index.json

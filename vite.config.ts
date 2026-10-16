@@ -55,6 +55,8 @@ export default defineConfig({
             'resources/js/components/ui/*',
             'resources/js/routes/**',
             'resources/js/wayfinder/**',
+            // Skills de terceiros (Boost, Impeccable), instaladas e atualizadas pelos próprios CLIs.
+            '.claude/skills/**',
         ],
         options: {
             denyWarnings: true,

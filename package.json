@@ -3,6 +3,7 @@
     "private": true,
     "type": "module",
     "scripts": {
+        "prepare": "husky",
         "build": "vp build",
         "build:ssr": "vp build && vp build --ssr",
         "dev": "vp dev",
@@ -31,6 +32,8 @@
         "@types/node": "^22.13.5",
         "@vitejs/plugin-vue": "^6.0.0",
         "concurrently": "^10.0.3",
+        "husky": "^9.1.7",
+        "lint-staged": "^17.6.0",
         "typescript": "^5.2.2",
         "vite": "^8.0.0",
         "vite-plus": "0.3.0",

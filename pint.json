@@ -1,3 +1,11 @@
 {
-    "preset": "laravel"
+    "preset": "laravel",
+    "rules": {
+        "global_namespace_import": true,
+        "is_null": true,
+        "strict_comparison": true,
+        "strict_param": true,
+        "use_arrow_functions": true,
+        "void_return": true
+    }
 }

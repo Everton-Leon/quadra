@@ -1,4 +1,7 @@
+# Hooks e scripts com LF; sem isso o sh do container quebra com \r.
 * text=auto eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
 
 *.blade.php diff=html
 *.css diff=css

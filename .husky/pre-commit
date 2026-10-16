@@ -1,0 +1,6 @@
+# Verificações locais (arquivos sensíveis, debug, conflitos, migrations).
+node .husky/scripts/check-staged.mjs
+
+# Linters (Pint, Larastan e composer validate no container; vite-plus no host).
+node .husky/scripts/ensure-container.mjs --if-staged
+npx --no -- lint-staged

@@ -1,0 +1,15 @@
+node .husky/scripts/check-branch.mjs
+node .husky/scripts/ensure-container.mjs
+
+# A imagem de produção usa --classmap-authoritative: classe cujo arquivo não segue o PSR-4
+# (ex.: diferença de maiúsculas no nome) fica fora do classmap e não carrega. Windows e macOS não acusam.
+docker compose exec -T laravel.test composer dump-autoload --optimize --strict-psr
+docker compose exec -T laravel.test composer lint:check
+docker compose exec -T laravel.test composer refactor:check
+docker compose exec -T laravel.test composer analyse
+# Suíte completa com piso de cobertura (pcov vem na imagem do Sail).
+docker compose exec -T laravel.test composer test:coverage
+
+# Front (host): formatação, lint e tipos.
+npm run check
+npm run types:check

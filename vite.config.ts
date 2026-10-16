@@ -70,6 +70,10 @@ export default defineConfig({
         htmlWhitespaceSensitivity: 'css',
         ignorePatterns: [
             '.github/**',
+            // Documentos e arquivos gerados pelo Boost (boost:update reescreve).
+            '**/*.md',
+            '.claude/skills/**',
+            'boost.json',
             'composer.json',
             'resources/js/components/ui/*',
             'resources/views/mail/*',

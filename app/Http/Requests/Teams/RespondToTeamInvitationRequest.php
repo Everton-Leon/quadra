@@ -23,12 +23,13 @@ class RespondToTeamInvitationRequest extends FormRequest
     /**
      * Get the validation data from the request.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
     public function validationData(): array
     {
-        return array_merge(parent::validationData(), [
+        return [
+            ...parent::validationData(),
             'invitation' => $this->route('invitation'),
-        ]);
+        ];
     }
 }

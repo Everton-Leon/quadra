@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Str;
 use Pdo\Mysql;
 
@@ -61,7 +63,7 @@ return [
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            ], fn (mixed $value): bool => $value !== null && $value !== '') : [],
         ],
 
         'mariadb' => [
@@ -81,7 +83,7 @@ return [
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            ], fn (mixed $value): bool => $value !== null && $value !== '') : [],
         ],
 
         'pgsql' => [

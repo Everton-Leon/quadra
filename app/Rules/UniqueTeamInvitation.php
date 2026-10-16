@@ -22,6 +22,11 @@ class UniqueTeamInvitation implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
+        // Valor que não é texto é recusado pela regra 'email' declarada junto desta.
+        if (! is_string($value)) {
+            return;
+        }
+
         $email = strtolower($value);
 
         $isMember = $this->team->members()
@@ -37,7 +42,7 @@ class UniqueTeamInvitation implements ValidationRule
         $hasPendingInvitation = TeamInvitation::where('team_id', $this->team->id)
             ->whereRaw('LOWER(email) = ?', [$email])
             ->whereNull('accepted_at')
-            ->where(function ($query) {
+            ->where(function ($query): void {
                 $query->whereNull('expires_at')
                     ->orWhere('expires_at', '>', now());
             })

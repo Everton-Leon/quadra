@@ -8,7 +8,9 @@ use App\Http\Requests\Teams\CreateTeamInvitationRequest;
 use App\Http\Requests\Teams\RespondToTeamInvitationRequest;
 use App\Models\Team;
 use App\Models\TeamInvitation;
+use App\Models\User;
 use App\Notifications\Teams\TeamInvitation as TeamInvitationNotification;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -20,14 +22,14 @@ class TeamInvitationController extends Controller
     /**
      * Store a newly created invitation.
      */
-    public function store(CreateTeamInvitationRequest $request, Team $team): RedirectResponse
+    public function store(CreateTeamInvitationRequest $request, #[CurrentUser] User $user, Team $team): RedirectResponse
     {
         Gate::authorize('inviteMember', $team);
 
         $invitation = $team->invitations()->create([
-            'email' => $request->validated('email'),
-            'role' => TeamRole::from($request->validated('role')),
-            'invited_by' => $request->user()->id,
+            'email' => $request->string('email')->value(),
+            'role' => TeamRole::from($request->string('role')->value()),
+            'invited_by' => $user->id,
             'expires_at' => now()->addDays(3),
         ]);
 
@@ -58,11 +60,9 @@ class TeamInvitationController extends Controller
     /**
      * Accept the invitation.
      */
-    public function accept(RespondToTeamInvitationRequest $request, TeamInvitation $invitation): RedirectResponse
+    public function accept(RespondToTeamInvitationRequest $request, #[CurrentUser] User $user, TeamInvitation $invitation): RedirectResponse
     {
-        $user = $request->user();
-
-        DB::transaction(function () use ($user, $invitation) {
+        DB::transaction(function () use ($user, $invitation): void {
             $team = $invitation->team;
 
             $team->memberships()->firstOrCreate(

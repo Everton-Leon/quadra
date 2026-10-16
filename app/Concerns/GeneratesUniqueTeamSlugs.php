@@ -2,7 +2,6 @@
 
 namespace App\Concerns;
 
-use App\Models\Team;
 use Illuminate\Support\Str;
 
 trait GeneratesUniqueTeamSlugs
@@ -15,28 +14,29 @@ trait GeneratesUniqueTeamSlugs
         $defaultSlug = Str::slug($name);
 
         $query = static::withTrashed()
-            ->where(function ($query) use ($defaultSlug) {
+            ->where(function ($query) use ($defaultSlug): void {
                 $query->where('slug', $defaultSlug)
                     ->orWhere('slug', 'like', $defaultSlug.'-%');
             });
 
-        if ($excludeId) {
+        if ($excludeId !== null) {
             $query->where('id', '!=', $excludeId);
         }
 
         $existingSlugs = $query->pluck('slug');
 
         $maxSuffix = $existingSlugs
-            ->map(function (string $slug) use ($defaultSlug): ?int {
+            ->map(function (mixed $slug) use ($defaultSlug): ?int {
                 if ($slug === $defaultSlug) {
                     return 0;
-                } elseif (preg_match('/^'.preg_quote($defaultSlug, '/').'-(\d+)$/', $slug, $matches)) {
+                }
+                if (is_string($slug) && preg_match('/^'.preg_quote($defaultSlug, '/').'-(\d+)$/', $slug, $matches) === 1) {
                     return (int) $matches[1];
                 }
 
                 return null;
             })
-            ->filter(fn (?int $suffix) => $suffix !== null)
+            ->filter(fn (?int $suffix): bool => $suffix !== null)
             ->max() ?? 0;
 
         return $existingSlugs->isEmpty()

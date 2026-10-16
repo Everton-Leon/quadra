@@ -3,6 +3,7 @@
 namespace App\Http\Responses\Concerns;
 
 use App\Models\Team;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 
@@ -21,11 +22,11 @@ trait RedirectsToCurrentTeam
     {
         $user = $request->user();
 
-        abort_if(! $user, 403);
+        abort_if(! $user instanceof User, 403);
 
         $team = $user->currentTeam ?? $user->personalTeam();
 
-        abort_if(! $team, 403);
+        abort_if(! $team instanceof Team, 403);
 
         return $team;
     }

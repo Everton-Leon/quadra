@@ -7,7 +7,7 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
-class CreateTeam
+class CreateTeamAction
 {
     /**
      * Create a new team and add the user as owner.

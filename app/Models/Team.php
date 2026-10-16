@@ -6,6 +6,7 @@ use App\Concerns\GeneratesUniqueTeamSlugs;
 use App\Enums\TeamRole;
 use Database\Factories\TeamFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\RouteKey;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,6 +28,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, User> $members
  */
 #[Fillable(['name', 'slug', 'is_personal'])]
+#[RouteKey('slug')]
 class Team extends Model
 {
     /** @use HasFactory<TeamFactory> */
@@ -39,13 +41,13 @@ class Team extends Model
     {
         parent::boot();
 
-        static::creating(function (Team $team) {
-            if (empty($team->slug)) {
+        static::creating(function (Team $team): void {
+            if (blank($team->slug)) {
                 $team->slug = static::generateUniqueTeamSlug($team->name);
             }
         });
 
-        static::updating(function (Team $team) {
+        static::updating(function (Team $team): void {
             if ($team->isDirty('name')) {
                 $team->slug = static::generateUniqueTeamSlug($team->name, $team->id);
             }
@@ -105,13 +107,5 @@ class Team extends Model
         return [
             'is_personal' => 'boolean',
         ];
-    }
-
-    /**
-     * Get the route key for the model.
-     */
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
     }
 }

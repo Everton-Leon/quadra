@@ -20,7 +20,7 @@ class TeamMemberController extends Controller
     {
         Gate::authorize('updateMember', $team);
 
-        $newRole = TeamRole::from($request->validated('role'));
+        $newRole = TeamRole::from($request->string('role')->value());
 
         $team->memberships()
             ->where('user_id', $user->id)
@@ -39,14 +39,16 @@ class TeamMemberController extends Controller
     {
         Gate::authorize('removeMember', $team);
 
-        abort_if($team->owner()?->is($user), 403, __('The team owner cannot be removed.'));
+        abort_if($team->owner()?->is($user) === true, 403, __('The team owner cannot be removed.'));
 
         $team->memberships()
             ->where('user_id', $user->id)
             ->delete();
 
-        if ($user->isCurrentTeam($team)) {
-            $user->switchTeam($user->personalTeam());
+        $personalTeam = $user->personalTeam();
+
+        if ($personalTeam instanceof Team && $user->isCurrentTeam($team)) {
+            $user->switchTeam($personalTeam);
         }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Member removed.')]);

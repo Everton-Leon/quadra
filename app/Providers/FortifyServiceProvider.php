@@ -9,6 +9,7 @@ use App\Http\Responses\RegisterResponse;
 use App\Http\Responses\VerifyEmailResponse;
 use App\Models\TeamInvitation;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -89,7 +90,7 @@ class FortifyServiceProvider extends ServiceProvider
     {
 
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
+            $throttleKey = Str::transliterate(Str::lower($request->string(Fortify::username())->value()).'|'.$request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
         });
@@ -113,12 +114,12 @@ class FortifyServiceProvider extends ServiceProvider
             ->with('team')
             ->where('code', $invitationCode)
             ->whereNull('accepted_at')
-            ->where(fn ($query) => $query
+            ->where(fn (Builder $query) => $query
                 ->whereNull('expires_at')
                 ->orWhere('expires_at', '>=', now()))
             ->first();
 
-        if (! $invitation) {
+        if ($invitation === null) {
             return null;
         }
 

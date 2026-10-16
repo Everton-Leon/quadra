@@ -73,6 +73,7 @@ export default defineConfig({
             // Documentos e arquivos gerados pelo Boost (boost:update reescreve).
             '**/*.md',
             '.claude/skills/**',
+            '.claude/settings.json',
             'boost.json',
             'composer.json',
             'resources/js/components/ui/*',

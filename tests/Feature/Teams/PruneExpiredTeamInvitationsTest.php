@@ -4,9 +4,12 @@ use App\Enums\TeamRole;
 use App\Models\Team;
 use App\Models\TeamInvitation;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-test('expired invitations are deleted by the scheduled cleanup', function () {
-    $this->travelTo(now()->startOfDay());
+uses(RefreshDatabase::class);
+
+test('expired invitations are deleted by the scheduled cleanup', function (): void {
+    $this->travelTo(today());
 
     $owner = User::factory()->create();
     $team = Team::factory()->create();
